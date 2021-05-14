@@ -6,18 +6,18 @@ import p.lodz.pl.zzpj.sharethebill.entities.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UserDtoConverter {
-    private UserDtoConverter() {
+public class UserConverter {
+    private UserConverter() {
     }
 
     public static List<UserDto> toDtoList(List<User> userList) {
         return userList
                 .stream()
-                .map(UserDtoConverter::toDto)
+                .map(UserConverter::toDto)
                 .collect(Collectors.toList());
     }
 
-    private static UserDto toDto(User user) {
+    public static UserDto toDto(User user) {
         return UserDto
                 .builder()
                 .id(user.getId())
