@@ -17,5 +17,5 @@ public class PurchaseDto {
 
     private final String description;
 
-    private final List<UserDto> participants;
+    private final UserDto sponsor;
 }

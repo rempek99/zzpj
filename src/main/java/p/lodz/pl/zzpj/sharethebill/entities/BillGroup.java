@@ -46,4 +46,9 @@ public class BillGroup {
     public void removeMember(Long userId) {
         members.removeIf(x -> x.getId().equals(userId));
     }
+
+    public void registerPurchase(Purchase newPurchase){
+        newPurchase.setBillGroup(this);
+        purchases.add(newPurchase);
+    }
 }

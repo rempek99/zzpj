@@ -3,8 +3,6 @@ package p.lodz.pl.zzpj.sharethebill.entities;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -23,18 +21,18 @@ public class Purchase {
     @Column(nullable = true)
     private String description;
 
-    @ManyToMany(
-            cascade = CascadeType.ALL
-    )
-    private List<User> participants = new ArrayList<>();
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User sponsor;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bill_group_id")
     BillGroup billGroup;
 
-    public Purchase(String title, Double value) {
+    public Purchase(String title, Double value, User sponsor) {
         this.title = title;
         this.value = value;
+        this.sponsor = sponsor;
     }
 
     public Purchase(String title, Double value, String description) {
@@ -43,11 +41,7 @@ public class Purchase {
         this.description = description;
     }
 
-    public void addParticipant(User newParticipant) {
-        participants.add(newParticipant);
-    }
+    public Purchase() {
 
-    public void removeParticipant(Long userId) {
-        participants.removeIf(x -> x.getId().equals(userId));
     }
 }

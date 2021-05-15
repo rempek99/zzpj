@@ -23,7 +23,7 @@ public class PurchaseConverter {
                 .title(purchase.getTitle())
                 .description(purchase.getDescription())
                 .value(purchase.getValue())
-                .participants(UserConverter.toDtoList(purchase.getParticipants()))
+                .sponsor(UserConverter.toDto(purchase.getSponsor()))
                 .build();
     }
 }

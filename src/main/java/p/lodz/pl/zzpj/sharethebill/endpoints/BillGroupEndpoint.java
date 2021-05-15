@@ -2,11 +2,14 @@ package p.lodz.pl.zzpj.sharethebill.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import p.lodz.pl.zzpj.sharethebill.dtos.BillGroupDto;
+import p.lodz.pl.zzpj.sharethebill.dtos.BillResultDto;
 import p.lodz.pl.zzpj.sharethebill.services.GroupService;
 import p.lodz.pl.zzpj.sharethebill.utils.BillGroupConverter;
+import p.lodz.pl.zzpj.sharethebill.utils.BillResultConverter;
 
 import java.util.List;
 
@@ -25,5 +28,10 @@ public class BillGroupEndpoint {
     @GetMapping("all")
     public List<BillGroupDto> getAll(){
         return BillGroupConverter.toDtoList(groupService.findAll());
+    }
+
+    @GetMapping("calculate/{groupId}")
+    public List<BillResultDto> calculate(@PathVariable Long groupId){
+        return BillResultConverter.toDtoList(groupService.calculate(groupId));
     }
 }
