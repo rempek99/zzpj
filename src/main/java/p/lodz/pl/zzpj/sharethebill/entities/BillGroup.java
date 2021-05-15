@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -14,10 +15,10 @@ public class BillGroup {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
     private String name;
 
-    @Column(nullable = false)
+    @NotNull
     private Boolean isActive;
 
     @ManyToMany(
