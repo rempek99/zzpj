@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User,Long> {
     List<User> findByRole(String login);
     Optional<User> findById(Long id);
+    Optional<User> findUserByEmailIgnoreCase(String email);
 }

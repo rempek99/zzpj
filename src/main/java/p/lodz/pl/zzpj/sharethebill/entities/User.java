@@ -2,6 +2,8 @@ package p.lodz.pl.zzpj.sharethebill.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import p.lodz.pl.zzpj.sharethebill.model.UserRole;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,12 +24,18 @@ public class User {
     private String login;
 
     @NotNull
-    private String role;
+    private String email;
 
-    public User(String login, String role) {
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    public User(String login, String email, UserRole role) {
         this.login = login;
+        this.email = email;
         this.role = role;
     }
+
     @OneToMany(
             mappedBy = "sponsor",
             cascade = CascadeType.ALL,

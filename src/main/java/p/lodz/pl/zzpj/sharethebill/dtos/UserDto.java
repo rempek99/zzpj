@@ -8,5 +8,6 @@ import lombok.Getter;
 public class UserDto {
     private final Long id;
     private final String login;
+    private final String email;
     private final String role;
 }

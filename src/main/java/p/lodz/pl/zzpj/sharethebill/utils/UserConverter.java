@@ -22,7 +22,8 @@ public class UserConverter {
                 .builder()
                 .id(user.getId())
                 .login(user.getLogin())
-                .role(user.getRole())
+                .email(user.getEmail())
+                .role(user.getRole().toString())
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package p.lodz.pl.zzpj.sharethebill.entities;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

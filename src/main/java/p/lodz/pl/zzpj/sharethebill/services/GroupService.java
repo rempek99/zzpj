@@ -8,6 +8,7 @@ import p.lodz.pl.zzpj.sharethebill.entities.BillGroup;
 import p.lodz.pl.zzpj.sharethebill.entities.Purchase;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.model.BillResult;
+import p.lodz.pl.zzpj.sharethebill.model.UserRole;
 import p.lodz.pl.zzpj.sharethebill.repositories.BillGroupRepository;
 
 import java.util.ArrayList;
@@ -22,9 +23,9 @@ public class GroupService {
 
     public void createExampleGroup() {
         BillGroup billGroup = new BillGroup("First Group", true);
-        User user = new User("ziomek", "client");
-        User user2 = new User("noob", "client");
-        User user3 = new User("anita", "client");
+        User user = new User("ziomek", "z@mek.com",UserRole.CLIENT);
+        User user2 = new User("noob", "n@ob.com", UserRole.CLIENT);
+        User user3 = new User("anita", "an@ta.com" ,UserRole.CLIENT);
         billGroup.addMember(user);
         billGroup.addMember(user2);
         billGroup.addMember(user3);
