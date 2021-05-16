@@ -40,6 +40,12 @@ public class BillGroup {
 
     }
 
+    public BillGroup(Long id, String name, Boolean isActive) {
+        this.id = id;
+        this.name = name;
+        this.isActive = isActive;
+    }
+
     public void addMember(User newMember) {
         members.add(newMember);
     }
@@ -48,7 +54,7 @@ public class BillGroup {
         members.removeIf(x -> x.getId().equals(userId));
     }
 
-    public void registerPurchase(Purchase newPurchase){
+    public void registerPurchase(Purchase newPurchase) {
         newPurchase.setBillGroup(this);
         purchases.add(newPurchase);
     }

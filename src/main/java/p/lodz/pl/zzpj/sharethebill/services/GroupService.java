@@ -3,12 +3,13 @@ package p.lodz.pl.zzpj.sharethebill.services;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import p.lodz.pl.zzpj.sharethebill.dtos.PurchaseDto;
 import p.lodz.pl.zzpj.sharethebill.entities.BillGroup;
 import p.lodz.pl.zzpj.sharethebill.entities.Purchase;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
+import p.lodz.pl.zzpj.sharethebill.exceptions.UniqueConstaintException;
 import p.lodz.pl.zzpj.sharethebill.model.BillResult;
-import p.lodz.pl.zzpj.sharethebill.model.UserRole;
 import p.lodz.pl.zzpj.sharethebill.repositories.BillGroupRepository;
 
 import java.util.ArrayList;
@@ -17,11 +18,15 @@ import java.util.List;
 @Service
 public class GroupService {
 
-    @Autowired
-    private BillGroupRepository billGroupRepository;
+    private final BillGroupRepository billGroupRepository;
+
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public GroupService(BillGroupRepository billGroupRepository, UserService userService) {
+        this.billGroupRepository = billGroupRepository;
+        this.userService = userService;
+    }
 
     public List<BillResult> calculate(Long groupId) {
         // todo move that functionality to separated class
@@ -52,16 +57,33 @@ public class GroupService {
         return billGroupRepository.findById(id).orElse(null);
     }
 
-    public List<User> addUser(Long userId, Long groupId) throws NotFoundException {
+    public List<User> addUser(Long userId, Long groupId) throws NotFoundException, UniqueConstaintException {
         BillGroup group = findById(groupId);
         User user = userService.find(userId);
-        if (group != null) {
-            group.addMember(user);
-            billGroupRepository.save(group);
-            return group.getMembers();
-        }
-        else
+        if (null == group)
             throw NotFoundException.createGroupNotFoundException(groupId);
+        if(group.getMembers().contains(user))
+            throw UniqueConstaintException.createUserAlreadyInGroupException();
+        group.addMember(user);
+        billGroupRepository.save(group);
+        return group.getMembers();
+
+    }
+
+    public BillGroup createGroup(BillGroup group) {
+        return billGroupRepository.save(group);
+    }
+
+    public BillGroup addPurchase(Long userId, Long groupId, Purchase purchase) throws UniqueConstaintException, NotFoundException {
+        BillGroup group = findById(groupId);
+        User user = userService.find(userId);
+        if (null == group)
+            throw NotFoundException.createGroupNotFoundException(groupId);
+        if(!group.getMembers().contains(user))
+            throw NotFoundException.createUserIsNotInGroupException(userId);
+        purchase.setSponsor(user);
+        group.registerPurchase(purchase);
+        return billGroupRepository.save(group);
     }
 
     //    public void createExampleGroup() {

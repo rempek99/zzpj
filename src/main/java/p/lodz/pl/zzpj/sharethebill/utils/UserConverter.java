@@ -2,6 +2,7 @@ package p.lodz.pl.zzpj.sharethebill.utils;
 
 import p.lodz.pl.zzpj.sharethebill.dtos.UserDto;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
+import p.lodz.pl.zzpj.sharethebill.model.UserRole;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,6 @@ public class UserConverter {
     }
 
     public static User toEntity(UserDto user) {
-        return new User(user.getId(), user.getLogin(), user.getRole());
+        return new User(user.getId(), user.getLogin(), user.getEmail(), UserRole.valueOf(user.getRole()));
     }
 }

@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BillResultConverter {
+
+    private BillResultConverter() {
+    }
+
     public static List<BillResultDto> toDtoList(List<BillResult> billResultList) {
         return billResultList
                 .stream()
@@ -15,11 +19,11 @@ public class BillResultConverter {
     }
 
     private static BillResultDto toDto(BillResult billResult) {
-      return BillResultDto
-              .builder()
-              .user(UserConverter.toDto(billResult.getUser()))
-              .charge(billResult.getCharge())
-              .build();
+        return BillResultDto
+                .builder()
+                .user(UserConverter.toDto(billResult.getUser()))
+                .charge(billResult.getCharge())
+                .build();
 
     }
 }

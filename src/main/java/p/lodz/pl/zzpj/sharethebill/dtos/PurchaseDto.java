@@ -18,7 +18,4 @@ public class PurchaseDto {
     private final Double value;
 
     private final String description;
-
-    @NotNull
-    private final Long sponsorId;
 }

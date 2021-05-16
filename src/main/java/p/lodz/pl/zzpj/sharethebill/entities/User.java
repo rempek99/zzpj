@@ -35,17 +35,13 @@ public class User {
             orphanRemoval = true)
     private List<Purchase> purchases = new ArrayList<>();
 
-    public User(Long id, String login, UserRole role) {
+
+    public User(Long id, String login, String email, UserRole role) {
         this.id = id;
-
-    }
-
-    public User(String login, UserRole role) {
         this.login = login;
+        this.email = email;
         this.role = role;
     }
-
-
     public User(String login, String email, UserRole role) {
         this.login = login;
         this.email = email;

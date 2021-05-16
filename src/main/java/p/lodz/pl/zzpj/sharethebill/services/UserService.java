@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
+import p.lodz.pl.zzpj.sharethebill.exceptions.UniqueConstaintException;
 import p.lodz.pl.zzpj.sharethebill.repositories.UserRepository;
 
 import java.util.List;
@@ -32,11 +33,16 @@ public class UserService {
             throw NotFoundException.createUserNotFoundException(id);
     }
 
-    public User add(User user) {
+    public User add(User user) throws UniqueConstaintException{
         Optional<User> userOptional = userRepository.
                 findUserByEmailIgnoreCase(user.getEmail());
         if (userOptional.isPresent()) {
-            throw new IllegalStateException("email taken");
+            throw UniqueConstaintException.createEmailTakenException(user.getEmail());
+        }
+        userOptional = userRepository.
+                findUserByLoginIgnoreCase(user.getLogin());
+        if (userOptional.isPresent()) {
+            throw UniqueConstaintException.createLoginTakenException(user.getLogin());
         }
         return userRepository.save(user);
     }

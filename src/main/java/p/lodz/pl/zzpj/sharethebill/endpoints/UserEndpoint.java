@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import p.lodz.pl.zzpj.sharethebill.dtos.UserDto;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
+import p.lodz.pl.zzpj.sharethebill.exceptions.UniqueConstaintException;
 import p.lodz.pl.zzpj.sharethebill.services.UserService;
 import p.lodz.pl.zzpj.sharethebill.utils.UserConverter;
 
@@ -14,7 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("user")
 public class UserEndpoint {
 
     private final UserService userService;
@@ -41,9 +42,13 @@ public class UserEndpoint {
 
     @PostMapping
     public UserDto registerUser(@RequestBody UserDto user) {
+        try {
             return UserConverter.toDto(
                     userService.add(UserConverter.toEntity(user))
             );
+        } catch (UniqueConstaintException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,e.getMessage(),e);
+        }
     }
 
     @DeleteMapping(path = "{id}")
@@ -52,8 +57,8 @@ public class UserEndpoint {
     }
 
     @PutMapping("{id}")
-    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-        User updatedUser = userService.update(id, user);
+    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UserDto user) {
+        User updatedUser = userService.update(id, UserConverter.toEntity(user));
         return UserConverter.toDto(updatedUser);
     }
 }

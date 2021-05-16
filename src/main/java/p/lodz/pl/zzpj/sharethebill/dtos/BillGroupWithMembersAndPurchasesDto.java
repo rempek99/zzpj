@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class BillGroupDto {
+public class BillGroupWithMembersAndPurchasesDto {
 
     private final Long id;
     private final String name;
