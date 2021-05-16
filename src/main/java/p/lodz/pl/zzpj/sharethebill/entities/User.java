@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -17,6 +18,12 @@ public class User {
     private Long id;
     private String login;
     private String role;
+
+    public User(Long id, String login, String role) {
+        this.id = id;
+        this.login = login;
+        this.role = role;
+    }
 
     public User(String login, String role) {
         this.login = login;

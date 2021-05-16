@@ -22,4 +22,7 @@ public class UserService {
         return IterableUtils.toList(userRepository.findAll());
     }
 
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
 }

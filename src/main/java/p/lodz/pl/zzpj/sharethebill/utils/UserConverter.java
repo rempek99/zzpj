@@ -25,4 +25,8 @@ public class UserConverter {
                 .role(user.getRole())
                 .build();
     }
+
+    public static User toEntity(UserDto user) {
+        return new User(user.getId(), user.getLogin(), user.getRole());
+    }
 }
