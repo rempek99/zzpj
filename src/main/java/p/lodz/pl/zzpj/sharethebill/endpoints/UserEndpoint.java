@@ -1,16 +1,20 @@
 package p.lodz.pl.zzpj.sharethebill.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import p.lodz.pl.zzpj.sharethebill.dtos.UserDto;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
+import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
 import p.lodz.pl.zzpj.sharethebill.services.UserService;
 import p.lodz.pl.zzpj.sharethebill.utils.UserConverter;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("api/user")
 public class UserEndpoint {
 
     private final UserService userService;
@@ -25,10 +29,31 @@ public class UserEndpoint {
         List<User> userList = userService.findAll();
         return UserConverter.toDtoList(userList);
     }
-    @PostMapping("create")
-    public UserDto createUser(@RequestBody UserDto user){
-        return UserConverter.toDto(
-                userService.createUser(UserConverter.toEntity(user))
-        );
+
+    @GetMapping(path = "{id}")
+    public UserDto getUser(@PathVariable Long id) {
+        try {
+            return UserConverter.toDto(userService.find(id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
+    }
+
+    @PostMapping
+    public UserDto registerUser(@RequestBody UserDto user) {
+            return UserConverter.toDto(
+                    userService.add(UserConverter.toEntity(user))
+            );
+    }
+
+    @DeleteMapping(path = "{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.delete(id);
+    }
+
+    @PutMapping("{id}")
+    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
+        User updatedUser = userService.update(id, user);
+        return UserConverter.toDto(updatedUser);
     }
 }

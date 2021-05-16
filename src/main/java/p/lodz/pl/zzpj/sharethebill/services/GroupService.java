@@ -8,6 +8,7 @@ import p.lodz.pl.zzpj.sharethebill.entities.Purchase;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
 import p.lodz.pl.zzpj.sharethebill.model.BillResult;
+import p.lodz.pl.zzpj.sharethebill.model.UserRole;
 import p.lodz.pl.zzpj.sharethebill.repositories.BillGroupRepository;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class GroupService {
     @Autowired
     private BillGroupRepository billGroupRepository;
 
+    @Autowired
+    private UserService userService;
 
     public List<BillResult> calculate(Long groupId) {
         // todo move that functionality to separated class
@@ -49,8 +52,9 @@ public class GroupService {
         return billGroupRepository.findById(id).orElse(null);
     }
 
-    public List<User> addUser(User user, Long groupId) throws NotFoundException {
-        BillGroup group = billGroupRepository.findById(groupId).orElseThrow(IllegalStateException::new);
+    public List<User> addUser(Long userId, Long groupId) throws NotFoundException {
+        BillGroup group = findById(groupId);
+        User user = userService.find(userId);
         if (group != null) {
             group.addMember(user);
             billGroupRepository.save(group);
