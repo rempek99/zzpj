@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import p.lodz.pl.zzpj.sharethebill.dtos.UserDto;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.services.UserService;
-import p.lodz.pl.zzpj.sharethebill.utils.UserDtoConverter;
+import p.lodz.pl.zzpj.sharethebill.utils.UserConverter;
 
 import java.util.List;
 
@@ -23,6 +23,6 @@ public class UserEndpoint {
     @GetMapping
     public List<UserDto> getAllClients() {
         List<User> userList = userService.findAll();
-        return UserDtoConverter.toDtoList(userList);
+        return UserConverter.toDtoList(userList);
     }
 }
