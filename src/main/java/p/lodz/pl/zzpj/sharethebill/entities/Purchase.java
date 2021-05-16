@@ -3,6 +3,7 @@ package p.lodz.pl.zzpj.sharethebill.entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
@@ -12,13 +13,12 @@ public class Purchase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
     private String title;
 
-    @Column(nullable = false)
+    @NotNull
     private Double value;
 
-    @Column(nullable = true)
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
