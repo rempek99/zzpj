@@ -20,6 +20,7 @@ public class Purchase {
     @NotNull
     private Double value;
 
+
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)

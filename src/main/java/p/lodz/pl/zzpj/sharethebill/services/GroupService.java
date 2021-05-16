@@ -31,7 +31,8 @@ public class GroupService {
     public List<BillResult> calculate(Long groupId) {
         // todo move that functionality to separated class
         BillGroup group = billGroupRepository.findById(groupId).orElseThrow(IllegalStateException::new);
-        List<Purchase> purchaseList = group.getPurchases();
+        List<Purchase> purchaseList = CurrencyService.convertIntoGroupCurrency(group);
+
         double sum = purchaseList.stream().mapToDouble(Purchase::getValue).sum();
         int members = group.getMembers().size();
         double difference = sum / members;
@@ -71,6 +72,12 @@ public class GroupService {
     }
 
     public BillGroup createGroup(BillGroup group) {
+        return billGroupRepository.save(group);
+    }
+
+    public BillGroup changeCurrency(Long groupId,String currencyCode) {
+        BillGroup group = findById(groupId);
+        group.setCurrencyCode(currencyCode);
         return billGroupRepository.save(group);
     }
 

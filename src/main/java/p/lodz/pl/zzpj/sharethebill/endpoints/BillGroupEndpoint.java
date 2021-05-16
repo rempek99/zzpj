@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import p.lodz.pl.zzpj.sharethebill.dtos.*;
-import p.lodz.pl.zzpj.sharethebill.entities.BillGroup;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
 import p.lodz.pl.zzpj.sharethebill.exceptions.UniqueConstaintException;
 import p.lodz.pl.zzpj.sharethebill.services.GroupService;
@@ -60,6 +59,14 @@ public class BillGroupEndpoint {
     public BillGroupWithMembersAndPurchasesDto createBillGroup(@RequestBody BillGroupWithMembersAndPurchasesDto group){
         return BillGroupConverter.toDtoWithMembersAndPurchases(
                 groupService.createGroup(BillGroupConverter.toEntity(group))
+        );
+    }
+
+    @PutMapping("changeCurrency/{groupId}/{currencyCode}")
+    public BillGroupWithMembersAndPurchasesDto changeCurrency( @PathVariable Long groupId, @PathVariable String currencyCode){
+
+        return BillGroupConverter.toDtoWithMembersAndPurchases(
+                groupService.changeCurrency(groupId, currencyCode)
         );
     }
 

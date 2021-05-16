@@ -6,10 +6,11 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class BillGroupWithPurchasesDto {
     private final Long id;
     private final String name;
     private final Boolean isActive;
+    private String currencyCode = "EUR";
     private final List<PurchaseWithUserDto> purchases;
 }

@@ -21,10 +21,12 @@ public class BillGroupConverter {
     }
 
     public static BillGroupWithMembersAndPurchasesDto toDtoWithMembersAndPurchases(BillGroup billGroup) {
+        System.out.println(billGroup.getCurrencyCode());
         return BillGroupWithMembersAndPurchasesDto
                 .builder()
                 .id(billGroup.getId())
                 .isActive(billGroup.getIsActive())
+                .currencyCode(billGroup.getCurrencyCode())
                 .name(billGroup.getName())
                 .members(UserConverter.toDtoList(billGroup.getMembers()))
                 .purchases(PurchaseConverter.toDtoWithUserList(billGroup.getPurchases()))
@@ -32,7 +34,7 @@ public class BillGroupConverter {
     }
 
     public static BillGroup toEntity(BillGroupWithMembersAndPurchasesDto group) {
-        return new BillGroup(group.getId(), group.getName(), group.getIsActive());
+        return new BillGroup(group.getId(), group.getName(), group.getCurrencyCode(), group.getIsActive());
 
     }
 
@@ -41,6 +43,7 @@ public class BillGroupConverter {
                 .builder()
                 .id(billGroup.getId())
                 .isActive(billGroup.getIsActive())
+                .currencyCode(billGroup.getCurrencyCode())
                 .name(billGroup.getName())
                 .purchases(PurchaseConverter.toDtoWithUserList(billGroup.getPurchases()))
                 .build();

@@ -18,6 +18,8 @@ public class BillGroup {
     @NotNull
     private String name;
 
+    private String currencyCode = "EUR";
+
     @NotNull
     private Boolean isActive;
 
@@ -31,8 +33,9 @@ public class BillGroup {
             orphanRemoval = true)
     private List<Purchase> purchases = new ArrayList<>();
 
-    public BillGroup(String name, Boolean isActive) {
+    public BillGroup(String name,String currencyCode, Boolean isActive) {
         this.name = name;
+        this.currencyCode = currencyCode;
         this.isActive = isActive;
     }
 
@@ -40,9 +43,10 @@ public class BillGroup {
 
     }
 
-    public BillGroup(Long id, String name, Boolean isActive) {
+    public BillGroup(Long id, String name,String currencyCode, Boolean isActive) {
         this.id = id;
         this.name = name;
+        this.currencyCode = currencyCode;
         this.isActive = isActive;
     }
 
