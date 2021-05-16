@@ -13,5 +13,5 @@ public class BillGroupDto {
     private final String name;
     private final Boolean isActive;
     private final List<UserDto> members;
-    private final List<PurchaseDto> purchases;
+    private final List<PurchaseWithUserDto> purchases;
 }

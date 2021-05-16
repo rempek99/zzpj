@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
-public class PurchaseDto {
+public class PurchaseWithUserDto {
 
     private final Long id;
 
@@ -19,6 +19,5 @@ public class PurchaseDto {
 
     private final String description;
 
-    @NotNull
-    private final Long sponsorId;
+    private final UserDto sponsor;
 }
