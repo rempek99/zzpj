@@ -14,6 +14,7 @@ import p.lodz.pl.zzpj.sharethebill.repositories.BillGroupRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupService {
@@ -85,6 +86,23 @@ public class GroupService {
         group.registerPurchase(purchase);
         return billGroupRepository.save(group);
     }
+    public List<Purchase> purchasesByGroup(Long id){
+        BillGroup group = findById(id);
+        if(group!=null)
+            return group.getPurchases();
+        return null;
+    }
+
+    public List<Purchase> purchasesByGroupAndUser(Long groupId, Long userId){
+        BillGroup group = findById(groupId);
+        if(group==null)
+            return null;
+        List<Purchase> purchases = group.getPurchases();
+        return purchases.stream()
+                .filter(i -> i.getSponsor().getId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
 
     //    public void createExampleGroup() {
 //        BillGroup billGroup = new BillGroup("First Group", true);

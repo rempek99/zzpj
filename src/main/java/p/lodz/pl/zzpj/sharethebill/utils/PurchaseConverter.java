@@ -30,6 +30,21 @@ public class PurchaseConverter {
                 .build();
     }
 
+    public static PurchaseDto toPurchaseDto(Purchase purchase){
+        return PurchaseDto
+                .builder()
+                .id(purchase.getId())
+                .title(purchase.getTitle())
+                .value(purchase.getValue())
+                .description(purchase.getDescription())
+                .build();
+    }
+    public static List<PurchaseDto> toPurchaseDtoList(List<Purchase> purchases){
+        return purchases
+                .stream()
+                .map(PurchaseConverter::toPurchaseDto)
+                .collect(Collectors.toList());
+    }
     public static Purchase toEntity(PurchaseDto purchase) {
         return new Purchase(purchase.getTitle(),
                 purchase.getValue(),

@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import p.lodz.pl.zzpj.sharethebill.dtos.PurchaseDto;
 import p.lodz.pl.zzpj.sharethebill.dtos.UserDto;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
 import p.lodz.pl.zzpj.sharethebill.exceptions.UniqueConstaintException;
+import p.lodz.pl.zzpj.sharethebill.services.PurchaseService;
 import p.lodz.pl.zzpj.sharethebill.services.UserService;
+import p.lodz.pl.zzpj.sharethebill.utils.PurchaseConverter;
 import p.lodz.pl.zzpj.sharethebill.utils.UserConverter;
 
 import javax.validation.Valid;
@@ -19,10 +22,12 @@ import java.util.List;
 public class UserEndpoint {
 
     private final UserService userService;
+    private final PurchaseService purchaseService;
 
     @Autowired
-    public UserEndpoint(UserService userService) {
+    public UserEndpoint(UserService userService, PurchaseService purchaseService) {
         this.userService = userService;
+        this.purchaseService = purchaseService;
     }
 
     @GetMapping
@@ -60,5 +65,10 @@ public class UserEndpoint {
     public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UserDto user) {
         User updatedUser = userService.update(id, UserConverter.toEntity(user));
         return UserConverter.toDto(updatedUser);
+    }
+
+    @GetMapping("allPurchases/{id}")
+    public List<PurchaseDto> getPurchasesBySponsor(@PathVariable Long id){
+        return PurchaseConverter.toPurchaseDtoList(purchaseService.findAllBySponsor(id));
     }
 }
