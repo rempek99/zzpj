@@ -53,44 +53,31 @@ public class GroupService {
                             .filter(o -> o.getSponsor() == user && o.getUser() == purchase.getSponsor())
                             .findFirst();
 
-                    if (sameSponsorUser.isEmpty()){
-                        if(reverseSponsorUser.isEmpty()){
+                    if(sameSponsorUser.isPresent()){
+                        charge += sameSponsorUser.get().getCharge();
+                    }
+
+                    if (reverseSponsorUser.isEmpty()){
+                        if(sameSponsorUser.isEmpty()){
                             resultList.add(new BillResult(user, charge,purchase.getSponsor()));
                         }else {
-                            if(reverseSponsorUser.get().getCharge() > charge){
-                                charge =reverseSponsorUser.get().getCharge() - charge;
-                                resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
-                            }
-                            else if (reverseSponsorUser.get().getCharge() < charge){
-                                charge-= reverseSponsorUser.get().getCharge();
-                                resultList.add(new BillResult(user, charge,purchase.getSponsor()));
-                                resultList.remove(reverseSponsorUser.get());
-                            }
-                            else {
-                                resultList.remove(reverseSponsorUser.get());
-                            }
-                        }
-                    }
-                    else {
-                        charge += sameSponsorUser.get().getCharge();
-                        if (reverseSponsorUser.isEmpty()){
                             resultList.get(resultList.indexOf(sameSponsorUser.get())).setCharge(charge);
-                        }else{
-                            if(reverseSponsorUser.get().getCharge() > charge){
-                                charge =reverseSponsorUser.get().getCharge() - charge;
-                                resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
-                            }
-                            else if (reverseSponsorUser.get().getCharge() < charge){
-                                charge-= reverseSponsorUser.get().getCharge();
-                                resultList.add(new BillResult(user, charge,purchase.getSponsor()));
-                                resultList.remove(reverseSponsorUser.get());
-                            }
-                            else {
-                                resultList.remove(reverseSponsorUser.get());
-                            }
                         }
-
+                    }else {
+                        if(reverseSponsorUser.get().getCharge() > charge){
+                            charge =reverseSponsorUser.get().getCharge() - charge;
+                            resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
+                        }
+                        else if (reverseSponsorUser.get().getCharge() < charge){
+                            charge-= reverseSponsorUser.get().getCharge();
+                            resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                            resultList.remove(reverseSponsorUser.get());
+                        }
+                        else {
+                            resultList.remove(reverseSponsorUser.get());
+                        }
                     }
+
                 }
             }
         }
