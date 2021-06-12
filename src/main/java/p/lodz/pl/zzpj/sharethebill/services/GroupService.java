@@ -85,7 +85,7 @@ public class GroupService {
     }
 
     public List<BillResult> calculateFromAllGroupsForUser(Long userId){
-        List<BillGroup> allGroups = findAll();
+        List<BillGroup> allGroups = findAll().stream().filter(BillGroup::getIsActive).collect(Collectors.toList());
         List<BillResult> billsForUser = new ArrayList<>();
         for (BillGroup billGroup : allGroups){
             List<BillResult> billsForGroupForUser = calculate(billGroup.getId()).stream()
@@ -94,6 +94,13 @@ public class GroupService {
             billsForUser.addAll(billsForGroupForUser);
         }
         return  billsForUser;
+    }
+
+    public void disableGroup(Long id){
+        Optional<BillGroup> groupToDisable = billGroupRepository.findById(id);
+        if(groupToDisable.isPresent()){
+            billGroupRepository.changeGroupActiveState(id, false);
+        }
     }
 
 
