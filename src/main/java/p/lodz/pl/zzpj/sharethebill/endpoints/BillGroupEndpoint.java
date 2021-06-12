@@ -85,4 +85,9 @@ public class BillGroupEndpoint {
         return BillResultConverter.toDtoList(groupService.calculateFromAllGroupsForUser(userId));
     }
 
+    @PutMapping("disableGroup/{groupId}")
+    public void disableGroup(@PathVariable Long groupId){
+        groupService.disableGroup(groupId);
+    }
+
 }
