@@ -24,16 +24,19 @@ public class GroupService {
 
     private final UserService userService;
 
+    private final CurrencyServiceProxy currencyService;
+
     @Autowired
-    public GroupService(BillGroupRepository billGroupRepository, UserService userService) {
+    public GroupService(BillGroupRepository billGroupRepository, UserService userService, CurrencyServiceProxy currencyService) {
         this.billGroupRepository = billGroupRepository;
         this.userService = userService;
+        this.currencyService = currencyService;
     }
 
     public List<BillResult> calculate(Long groupId) {
         // todo move that functionality to separated class
         BillGroup group = billGroupRepository.findById(groupId).orElseThrow(IllegalStateException::new);
-        List<Purchase> purchaseList = CurrencyService.convertIntoGroupCurrency(group);
+        List<Purchase> purchaseList = currencyService.convertIntoGroupCurrency(group);
 
         int members = group.getMembers().size();
         List<BillResult> resultList = new ArrayList<>();
