@@ -84,6 +84,18 @@ public class GroupService {
         return resultList;
     }
 
+    public List<BillResult> calculateFromAllGroupsForUser(Long userId){
+        List<BillGroup> allGroups = findAll();
+        List<BillResult> billsForUser = new ArrayList<>();
+        for (BillGroup billGroup : allGroups){
+            List<BillResult> billsForGroupForUser = calculate(billGroup.getId()).stream()
+                    .filter(bill -> bill.getUser().getId().equals(userId))
+                    .collect(Collectors.toList());
+            billsForUser.addAll(billsForGroupForUser);
+        }
+        return  billsForUser;
+    }
+
 
     public List<BillGroup> findAll() {
         return IterableUtils.toList(billGroupRepository.findAll());
@@ -127,21 +139,4 @@ public class GroupService {
         group.registerPurchase(purchase);
         return billGroupRepository.save(group);
     }
-
-    //    public void createExampleGroup() {
-//        BillGroup billGroup = new BillGroup("First Group", true);
-//        User user2 = new User("noob", "client");
-//        User user = new User("ziomek", "client");
-//        User user3 = new User("anita", "client");
-//        billGroup.addMember(user);
-//        billGroup.addMember(user2);
-//        billGroup.addMember(user3);
-//        Purchase purchase = new Purchase("Zakupy", 200., user2);
-//        Purchase purchase2 = new Purchase("Kino", 42., user2);
-//        Purchase purchase3 = new Purchase("Piwo", 40., user3);
-//        billGroup.registerPurchase(purchase);
-//        billGroup.registerPurchase(purchase2);
-//        billGroup.registerPurchase(purchase3);
-//        billGroupRepository.save(billGroup);
-//    }
 }

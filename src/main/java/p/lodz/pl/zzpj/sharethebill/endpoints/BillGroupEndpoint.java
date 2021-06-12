@@ -80,10 +80,9 @@ public class BillGroupEndpoint {
         return BillGroupConverter.toDtoWithMembersAndPurchasesList(groupService.findAll());
     }
 
+    @GetMapping("calculateAllForUser/{userId}")
+    public List<BillResultDto> calculateForUser(@PathVariable Long userId){
+        return BillResultConverter.toDtoList(groupService.calculateFromAllGroupsForUser(userId));
+    }
 
-    //    @GetMapping("example")
-//    public String createExample(){
-//        groupService.createExampleGroup();
-//        return "Example group created";
-//    }
 }
