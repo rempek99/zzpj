@@ -14,6 +14,8 @@ import p.lodz.pl.zzpj.sharethebill.repositories.BillGroupRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupService {
@@ -33,22 +35,68 @@ public class GroupService {
         BillGroup group = billGroupRepository.findById(groupId).orElseThrow(IllegalStateException::new);
         List<Purchase> purchaseList = CurrencyService.convertIntoGroupCurrency(group);
 
-        double sum = purchaseList.stream().mapToDouble(Purchase::getValue).sum();
         int members = group.getMembers().size();
-        double difference = sum / members;
         List<BillResult> resultList = new ArrayList<>();
+        if (members==0)
+            return resultList;
         for (User user : group.getMembers()) {
-            double charge = 0.;
             for (Purchase purchase : purchaseList) {
-                if (purchase.getSponsor().equals(user)) {
-                    charge -= purchase.getValue();
+                double charge;
+                if (!purchase.getSponsor().equals(user)) {
+                    charge = purchase.getValue()/members;
+
+                    Optional<BillResult> sameSponsorUser = resultList.stream()
+                            .filter(o -> o.getSponsor() == purchase.getSponsor() && o.getUser() == user)
+                            .findFirst();
+
+                    Optional<BillResult> reverseSponsorUser = resultList.stream()
+                            .filter(o -> o.getSponsor() == user && o.getUser() == purchase.getSponsor())
+                            .findFirst();
+
+                    if (sameSponsorUser.isEmpty()){
+                        if(reverseSponsorUser.isEmpty()){
+                            resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                        }else {
+                            if(reverseSponsorUser.get().getCharge() > charge){
+                                charge =reverseSponsorUser.get().getCharge() - charge;
+                                resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
+                            }
+                            else if (reverseSponsorUser.get().getCharge() < charge){
+                                charge-= reverseSponsorUser.get().getCharge();
+                                resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                            else {
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                        }
+                    }
+                    else {
+                        charge += sameSponsorUser.get().getCharge();
+                        if (reverseSponsorUser.isEmpty()){
+                            resultList.get(resultList.indexOf(sameSponsorUser.get())).setCharge(charge);
+                        }else{
+                            if(reverseSponsorUser.get().getCharge() > charge){
+                                charge =reverseSponsorUser.get().getCharge() - charge;
+                                resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
+                            }
+                            else if (reverseSponsorUser.get().getCharge() < charge){
+                                charge-= reverseSponsorUser.get().getCharge();
+                                resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                            else {
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                        }
+
+                    }
                 }
             }
-            charge += difference;
-            resultList.add(new BillResult(user, charge));
         }
         return resultList;
     }
+
 
     public List<BillGroup> findAll() {
         return IterableUtils.toList(billGroupRepository.findAll());

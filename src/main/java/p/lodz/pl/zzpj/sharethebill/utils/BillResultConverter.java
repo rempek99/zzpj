@@ -23,6 +23,7 @@ public class BillResultConverter {
                 .builder()
                 .user(UserConverter.toDto(billResult.getUser()))
                 .charge(billResult.getCharge())
+                .sponsor(UserConverter.toDto(billResult.getSponsor()))
                 .build();
 
     }

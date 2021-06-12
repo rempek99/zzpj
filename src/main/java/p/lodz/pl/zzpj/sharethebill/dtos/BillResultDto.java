@@ -9,5 +9,5 @@ public class BillResultDto {
 
     private UserDto user;
     private Double charge;
-
+    private UserDto sponsor;
 }
