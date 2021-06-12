@@ -35,24 +35,61 @@ public class GroupService {
         BillGroup group = billGroupRepository.findById(groupId).orElseThrow(IllegalStateException::new);
         List<Purchase> purchaseList = CurrencyService.convertIntoGroupCurrency(group);
 
-        //double sum = purchaseList.stream().mapToDouble(Purchase::getValue).sum();
         int members = group.getMembers().size();
-        //double difference = sum / members;
         List<BillResult> resultList = new ArrayList<>();
+        if (members==0)
+            return resultList;
         for (User user : group.getMembers()) {
             for (Purchase purchase : purchaseList) {
                 double charge;
                 if (!purchase.getSponsor().equals(user)) {
+                    charge = purchase.getValue()/members;
+
                     Optional<BillResult> sameSponsorUser = resultList.stream()
                             .filter(o -> o.getSponsor() == purchase.getSponsor() && o.getUser() == user)
                             .findFirst();
-                    charge = purchase.getValue()/members;
+
+                    Optional<BillResult> reverseSponsorUser = resultList.stream()
+                            .filter(o -> o.getSponsor() == user && o.getUser() == purchase.getSponsor())
+                            .findFirst();
+
                     if (sameSponsorUser.isEmpty()){
-                        resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                        if(reverseSponsorUser.isEmpty()){
+                            resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                        }else {
+                            if(reverseSponsorUser.get().getCharge() > charge){
+                                charge =reverseSponsorUser.get().getCharge() - charge;
+                                resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
+                            }
+                            else if (reverseSponsorUser.get().getCharge() < charge){
+                                charge-= reverseSponsorUser.get().getCharge();
+                                resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                            else {
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                        }
                     }
                     else {
                         charge += sameSponsorUser.get().getCharge();
-                        resultList.get(resultList.indexOf(sameSponsorUser.get())).setCharge(charge);
+                        if (reverseSponsorUser.isEmpty()){
+                            resultList.get(resultList.indexOf(sameSponsorUser.get())).setCharge(charge);
+                        }else{
+                            if(reverseSponsorUser.get().getCharge() > charge){
+                                charge =reverseSponsorUser.get().getCharge() - charge;
+                                resultList.get(resultList.indexOf(reverseSponsorUser.get())).setCharge(charge);
+                            }
+                            else if (reverseSponsorUser.get().getCharge() < charge){
+                                charge-= reverseSponsorUser.get().getCharge();
+                                resultList.add(new BillResult(user, charge,purchase.getSponsor()));
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                            else {
+                                resultList.remove(reverseSponsorUser.get());
+                            }
+                        }
+
                     }
                 }
             }
