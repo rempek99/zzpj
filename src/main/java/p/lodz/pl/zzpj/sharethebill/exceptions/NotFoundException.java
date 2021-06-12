@@ -22,7 +22,7 @@ public abstract class NotFoundException extends Exception{
         return new UserIsNotInGroupException(String.format(USER_NOT_IN_GROUP,id));
     }
 
-    private static class UserNotFoundException extends NotFoundException{
+    public static class UserNotFoundException extends NotFoundException{
         public UserNotFoundException(String message) {
             super(message);
         }

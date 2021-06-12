@@ -20,9 +20,11 @@ public class User {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String login;
 
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull
