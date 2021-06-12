@@ -53,12 +53,23 @@ public class UserEndpoint {
 
     @DeleteMapping(path = "{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.delete(id);
+        try {
+            userService.delete(id);
+        } catch (NotFoundException.UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
     }
 
     @PutMapping("{id}")
     public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UserDto user) {
-        User updatedUser = userService.update(id, UserConverter.toEntity(user));
+        User updatedUser = null;
+        try {
+            updatedUser = userService.update(id, UserConverter.toEntity(user));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        } catch (UniqueConstaintException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT,e.getMessage(),e);
+        }
         return UserConverter.toDto(updatedUser);
     }
 }

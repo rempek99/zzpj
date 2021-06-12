@@ -2,6 +2,7 @@ package p.lodz.pl.zzpj.sharethebill.services;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
 import p.lodz.pl.zzpj.sharethebill.exceptions.NotFoundException;
@@ -21,45 +22,49 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> findAll(){
+    public List<User> findAll() {
         return IterableUtils.toList(userRepository.findAll());
     }
 
     public User find(Long id) throws NotFoundException {
         Optional<User> user = userRepository.findById(id);
-        if(user.isPresent())
+        if (user.isPresent())
             return user.get();
         else
             throw NotFoundException.createUserNotFoundException(id);
     }
 
-    public User add(User user) throws UniqueConstaintException{
-        Optional<User> userOptional = userRepository.
-                findUserByEmailIgnoreCase(user.getEmail());
-        if (userOptional.isPresent()) {
-            throw UniqueConstaintException.createEmailTakenException(user.getEmail());
+    public User add(User user) throws UniqueConstaintException {
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("EMAIL"))
+                throw UniqueConstaintException.createEmailTakenException(user.getEmail());
+            else
+                throw UniqueConstaintException.createLoginTakenException(user.getLogin());
         }
-        userOptional = userRepository.
-                findUserByLoginIgnoreCase(user.getLogin());
-        if (userOptional.isPresent()) {
-            throw UniqueConstaintException.createLoginTakenException(user.getLogin());
-        }
-        return userRepository.save(user);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws NotFoundException.UserNotFoundException {
         if (!userRepository.existsById(id)) {
-            throw new IllegalStateException("user does not exist");
+            throw NotFoundException.createUserNotFoundException(id);
         }
         userRepository.deleteById(id);
     }
 
-    public User update(Long id, User newUser) {
+    public User update(Long id, User newUser) throws NotFoundException, UniqueConstaintException{
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("user not found " + id));
+                .orElseThrow(() -> NotFoundException.createUserNotFoundException(id));
         user.setLogin(newUser.getLogin());
         user.setEmail(newUser.getEmail());
         user.setRole(newUser.getRole());
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        }catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("EMAIL"))
+                throw UniqueConstaintException.createEmailTakenException(user.getEmail());
+            else
+                throw UniqueConstaintException.createLoginTakenException(user.getLogin());
+        }
     }
 }
