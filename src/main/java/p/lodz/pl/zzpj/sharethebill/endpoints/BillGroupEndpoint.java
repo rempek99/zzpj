@@ -2,6 +2,7 @@ package p.lodz.pl.zzpj.sharethebill.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import p.lodz.pl.zzpj.sharethebill.dtos.*;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("group")
+@Transactional
 public class BillGroupEndpoint {
 
 
@@ -63,14 +65,22 @@ public class BillGroupEndpoint {
     @PutMapping("changeCurrency/{groupId}/{currencyCode}")
     public BillGroupWithMembersAndPurchasesDto changeCurrency( @PathVariable Long groupId, @PathVariable String currencyCode){
 
-        return BillGroupConverter.toDtoWithMembersAndPurchases(
-                groupService.changeCurrency(groupId, currencyCode)
-        );
+        try {
+            return BillGroupConverter.toDtoWithMembersAndPurchases(
+                    groupService.changeCurrency(groupId, currencyCode)
+            );
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
     }
 
     @GetMapping("calculate/{groupId}")
     public List<BillResultDto> calculate(@PathVariable Long groupId){
-        return BillResultConverter.toDtoList(groupService.calculate(groupId));
+        try {
+            return BillResultConverter.toDtoList(groupService.calculate(groupId));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
     }
 
     @GetMapping("all")
@@ -80,7 +90,11 @@ public class BillGroupEndpoint {
 
     @GetMapping("calculateAllForUser/{userId}")
     public List<BillResultDto> calculateForUser(@PathVariable Long userId){
-        return BillResultConverter.toDtoList(groupService.calculateFromAllGroupsForUser(userId));
+        try {
+            return BillResultConverter.toDtoList(groupService.calculateFromAllGroupsForUser(userId));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
+        }
     }
 
     @PutMapping("disableGroup/{groupId}")

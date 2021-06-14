@@ -28,7 +28,7 @@ public abstract class NotFoundException extends Exception{
         }
     }
 
-    private static class GroupNotFoundException extends NotFoundException{
+    public static class GroupNotFoundException extends NotFoundException{
         private GroupNotFoundException(String message) {
             super(message);
         }
