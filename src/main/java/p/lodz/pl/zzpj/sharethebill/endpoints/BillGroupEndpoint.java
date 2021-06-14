@@ -98,7 +98,7 @@ public class BillGroupEndpoint {
     }
 
     @PutMapping("disableGroup/{groupId}")
-    public void disableGroup(@PathVariable Long groupId){
+    public void disableGroup(@PathVariable Long groupId) throws NotFoundException.GroupNotFoundException {
         groupService.disableGroup(groupId);
     }
 

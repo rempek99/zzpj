@@ -3,6 +3,7 @@ package p.lodz.pl.zzpj.sharethebill.services;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import p.lodz.pl.zzpj.sharethebill.entities.BillGroup;
 import p.lodz.pl.zzpj.sharethebill.entities.Purchase;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class GroupService {
 
     private final BillGroupRepository billGroupRepository;
@@ -99,11 +101,12 @@ public class GroupService {
         return  billsForUser;
     }
 
-    public void disableGroup(Long id){
+    public void disableGroup(Long id) throws NotFoundException.GroupNotFoundException {
         Optional<BillGroup> groupToDisable = billGroupRepository.findById(id);
         if(groupToDisable.isPresent()){
             billGroupRepository.changeGroupActiveState(id, false);
-        }
+        }else
+            throw NotFoundException.createGroupNotFoundException(id);
     }
 
 
