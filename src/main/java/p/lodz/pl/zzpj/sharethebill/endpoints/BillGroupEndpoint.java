@@ -47,8 +47,6 @@ public class BillGroupEndpoint {
                     BillGroupConverter.toDtoWithPurchases(
                     groupService.addPurchase(userId,groupId, PurchaseConverter.toEntity(purchase))
                     );
-        } catch (UniqueConstaintException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage(),e);
         }

@@ -135,7 +135,7 @@ public class GroupService {
         return billGroupRepository.save(group);
     }
 
-    public BillGroup addPurchase(Long userId, Long groupId, Purchase purchase) throws UniqueConstaintException, NotFoundException {
+    public BillGroup addPurchase(Long userId, Long groupId, Purchase purchase) throws  NotFoundException {
         BillGroup group = findById(groupId);
         User user = userService.find(userId);
         if (null == group)

@@ -1,6 +1,8 @@
 package p.lodz.pl.zzpj.sharethebill.entities;
 
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,12 +27,14 @@ public class BillGroup {
 
     @ManyToMany(
             cascade = CascadeType.ALL)
+//    @LazyCollection(LazyCollectionOption.FALSE)
     private List<User> members = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "billGroup",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+//    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Purchase> purchases = new ArrayList<>();
 
     public BillGroup(String name,String currencyCode, Boolean isActive) {
