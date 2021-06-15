@@ -3,6 +3,7 @@ package p.lodz.pl.zzpj.sharethebill.services;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import p.lodz.pl.zzpj.sharethebill.entities.BillGroup;
 import p.lodz.pl.zzpj.sharethebill.entities.Purchase;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class GroupServiceTest {
 
     @Autowired
@@ -31,14 +33,10 @@ class GroupServiceTest {
     private BillGroup billGroup = new BillGroup("testGroup", "EUR", true);
     private Purchase purchase = new Purchase("testing", 100.0, tester);
 
-    @BeforeAll
-    void setUp() throws UniqueConstaintException {
-        tester = userService.add(tester);
-    }
-
     @Test
     @Order(1)
     void createGroup() {
+        tester = assertDoesNotThrow(() -> userService.add(tester));
         assertThat(groupService.findAll().size()).isZero();
         billGroup = groupService.createGroup(billGroup);
         assertThat(groupService.findAll().size()).isEqualTo(1);
@@ -128,6 +126,7 @@ class GroupServiceTest {
     }
 
     @Test
+    @Order(12)
     void changeCurrencyNotFound() {
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> groupService.changeCurrency(-1L,"USD"));
@@ -135,6 +134,7 @@ class GroupServiceTest {
     }
 
     @Test
+    @Order(13)
     void changeCurrency() {
         assertDoesNotThrow(() ->groupService.changeCurrency(billGroup.getId(), "USD"));
     }

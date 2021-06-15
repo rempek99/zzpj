@@ -16,7 +16,7 @@ public  class CurrencyService {
         CurrencyDto data = given()
                 .when()
                 .pathParam("currencyCode", currencyCode)
-                .get("http://data.fixer.io/api/latest?access_key=652eecd3a28ccb3fd4d23bcfa5823c35&symbols={currencyCode}")
+                .get("http://data.fixer.io/api/latest?access_key=bfc46eb7f9ec4db83f4120edb948b32b&symbols={currencyCode}")
                 .then()
                 .statusCode(200)
                 .contentType(JSON)

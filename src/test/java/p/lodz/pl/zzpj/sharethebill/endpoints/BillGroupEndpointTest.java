@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.server.ResponseStatusException;
 import p.lodz.pl.zzpj.sharethebill.dtos.BillGroupWithMembersAndPurchasesDto;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class BillGroupEndpointTest {
 
     @Autowired
@@ -81,17 +83,12 @@ class BillGroupEndpointTest {
                     .build()
     };
 
-    @BeforeAll
-    void setUp(){
-        users[0] =userEndpoint.registerUser(users[0]);
-        users[1] =userEndpoint.registerUser(users[1]);
-        users[2] =userEndpoint.registerUser(users[2]);
-    }
-
     @Test
     @Order(1)
     void createGroupTest() {
+
         //given
+        users[0] = userEndpoint.registerUser(users[0]);
         assertThat(billGroupEndpoint.getAll().size()).isZero();
 
         //when
@@ -101,6 +98,7 @@ class BillGroupEndpointTest {
         List<BillGroupWithMembersAndPurchasesDto> billGroupEndpointAll = billGroupEndpoint.getAll();
         assertThat(billGroupEndpointAll.size()).isEqualTo(1);
     }
+
     @Test
     @Order(2)
     void addUserNotFoundTest() {
@@ -131,7 +129,7 @@ class BillGroupEndpointTest {
         assertThat(billGroupEndpoint.getAll().size()).isEqualTo(1);
 
         //when
-        billGroupEndpoint.addUser(users[0].getId(),assignedId);
+        billGroupEndpoint.addUser(users[0].getId(), assignedId);
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> billGroupEndpoint.addUser(users[0].getId(), assignedId));
 
@@ -145,16 +143,17 @@ class BillGroupEndpointTest {
     void addUserTest() {
         //given
         assertThat(billGroupEndpoint.getAll().size()).isEqualTo(1);
-        users[1] =userEndpoint.registerUser(users[1]);
-        users[2] =userEndpoint.registerUser(users[2]);
+        users[1] = userEndpoint.registerUser(users[1]);
+        users[2] = userEndpoint.registerUser(users[2]);
 
         //when
-        billGroupEndpoint.addUser(users[1].getId(),assignedId);
-        billGroupEndpoint.addUser(users[2].getId(),assignedId);
+        billGroupEndpoint.addUser(users[1].getId(), assignedId);
+        billGroupEndpoint.addUser(users[2].getId(), assignedId);
 
         //then
         assertThat(billGroupEndpoint.getAll().get(0).getMembers().size()).isEqualTo(3);
     }
+
     @Test
     @Order(5)
     void addPurchaseNotFoundTest() {
@@ -169,6 +168,7 @@ class BillGroupEndpointTest {
         //then
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
     @Test
     @Order(6)
     void addPurchaseTest() {
@@ -184,6 +184,7 @@ class BillGroupEndpointTest {
         //then
         assertThat(billGroupEndpoint.getAll().get(0).getPurchases().size()).isEqualTo(3);
     }
+
     @Test
     @Order(7)
     void calculateNotFoundTest() {
@@ -197,6 +198,7 @@ class BillGroupEndpointTest {
         //then
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
     @Test
     @Order(8)
     void calculateTest() {
@@ -209,6 +211,7 @@ class BillGroupEndpointTest {
         //then
         assertThat(billResult.size()).isEqualTo(3);
     }
+
     @Test
     @Order(9)
     void calculateForUserNotFoundTest() {
@@ -222,6 +225,7 @@ class BillGroupEndpointTest {
         //then
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
     @Test
     @Order(10)
     void calculateForUserTest() {
@@ -244,7 +248,7 @@ class BillGroupEndpointTest {
 
         //when
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> billGroupEndpoint.changeCurrency(-1L,"USD"));
+                () -> billGroupEndpoint.changeCurrency(-1L, "USD"));
         //then
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }
