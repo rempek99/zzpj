@@ -35,14 +35,13 @@ public class UserService {
     }
 
     public User add(User user) throws UniqueConstaintException {
-        try {
-            return userRepository.save(user);
-        } catch (DataIntegrityViolationException e) {
-            if (e.getMessage().contains("EMAIL"))
+            Optional<User> userByEmailIgnoreCase = userRepository.findUserByEmailIgnoreCase(user.getEmail());
+            if(userByEmailIgnoreCase.isPresent())
                 throw UniqueConstaintException.createEmailTakenException(user.getEmail());
-            else
+            Optional<User> userByLoginIgnoreCase = userRepository.findUserByLoginIgnoreCase(user.getLogin());
+            if(userByLoginIgnoreCase.isPresent())
                 throw UniqueConstaintException.createLoginTakenException(user.getLogin());
-        }
+            return userRepository.save(user);
     }
 
     public void delete(Long id) throws NotFoundException.UserNotFoundException {

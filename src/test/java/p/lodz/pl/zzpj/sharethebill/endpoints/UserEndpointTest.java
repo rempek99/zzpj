@@ -5,6 +5,7 @@ import org.junit.jupiter.api.MethodOrderer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.server.ResponseStatusException;
 import p.lodz.pl.zzpj.sharethebill.dtos.UserDto;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         locations = "classpath:application-integration.properties")
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class UserEndpointTest {
 
     @Autowired

@@ -1,6 +1,9 @@
 language: java
 jdk: openjdk11
+sudo: true
 script: ./mvnw clean install
+before_install:
+  - chmod +x mvnw
 #  - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 #  - jdk_switcher use openjdk11
 #  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh

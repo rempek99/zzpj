@@ -3,7 +3,7 @@ package p.lodz.pl.zzpj.sharethebill.services;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import p.lodz.pl.zzpj.sharethebill.dtos.PurchaseDto;
+import org.springframework.transaction.annotation.Transactional;
 import p.lodz.pl.zzpj.sharethebill.entities.BillGroup;
 import p.lodz.pl.zzpj.sharethebill.entities.Purchase;
 import p.lodz.pl.zzpj.sharethebill.entities.User;
@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class GroupService {
 
     private final BillGroupRepository billGroupRepository;
@@ -30,9 +31,9 @@ public class GroupService {
         this.userService = userService;
     }
 
-    public List<BillResult> calculate(Long groupId) {
+    public List<BillResult> calculate(Long groupId) throws NotFoundException {
         // todo move that functionality to separated class
-        BillGroup group = billGroupRepository.findById(groupId).orElseThrow(IllegalStateException::new);
+        BillGroup group = billGroupRepository.findById(groupId).orElseThrow(() -> NotFoundException.createGroupNotFoundException(groupId));
         List<Purchase> purchaseList = CurrencyService.convertIntoGroupCurrency(group);
 
         int members = group.getMembers().size();
@@ -84,32 +85,38 @@ public class GroupService {
         return resultList;
     }
 
-    public List<BillResult> calculateFromAllGroupsForUser(Long userId){
+    public List<BillResult> calculateFromAllGroupsForUser(Long userId) throws NotFoundException {
         List<BillGroup> allGroups = findAll().stream().filter(BillGroup::getIsActive).collect(Collectors.toList());
+        userService.find(userId);
         List<BillResult> billsForUser = new ArrayList<>();
         for (BillGroup billGroup : allGroups){
-            List<BillResult> billsForGroupForUser = calculate(billGroup.getId()).stream()
+            List<BillResult> billsForGroupForUser = calculate(billGroup.getId());
+//                    .stream()
+//                    .filter(bill -> bill.getUser().getId().equals(userId))
+//                    .collect(Collectors.toList());
+            billsForUser.addAll(billsForGroupForUser.stream()
                     .filter(bill -> bill.getUser().getId().equals(userId))
-                    .collect(Collectors.toList());
-            billsForUser.addAll(billsForGroupForUser);
+                    .collect(Collectors.toList()));
         }
         return  billsForUser;
     }
 
-    public void disableGroup(Long id){
+    public void disableGroup(Long id) throws NotFoundException.GroupNotFoundException {
         Optional<BillGroup> groupToDisable = billGroupRepository.findById(id);
         if(groupToDisable.isPresent()){
             billGroupRepository.changeGroupActiveState(id, false);
-        }
+        }else
+            throw NotFoundException.createGroupNotFoundException(id);
     }
+
 
 
     public List<BillGroup> findAll() {
         return IterableUtils.toList(billGroupRepository.findAll());
     }
 
-    public BillGroup findById(Long id) {
-        return billGroupRepository.findById(id).orElse(null);
+    public BillGroup findById(Long id) throws NotFoundException {
+        return billGroupRepository.findById(id).orElseThrow(() -> NotFoundException.createGroupNotFoundException(id));
     }
 
     public List<User> addUser(Long userId, Long groupId) throws NotFoundException, UniqueConstaintException {
@@ -129,13 +136,13 @@ public class GroupService {
         return billGroupRepository.save(group);
     }
 
-    public BillGroup changeCurrency(Long groupId,String currencyCode) {
+    public BillGroup changeCurrency(Long groupId,String currencyCode) throws NotFoundException {
         BillGroup group = findById(groupId);
         group.setCurrencyCode(currencyCode);
         return billGroupRepository.save(group);
     }
 
-    public BillGroup addPurchase(Long userId, Long groupId, Purchase purchase) throws UniqueConstaintException, NotFoundException {
+    public BillGroup addPurchase(Long userId, Long groupId, Purchase purchase) throws  NotFoundException {
         BillGroup group = findById(groupId);
         User user = userService.find(userId);
         if (null == group)

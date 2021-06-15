@@ -21,7 +21,6 @@ public class BillGroupConverter {
     }
 
     public static BillGroupWithMembersAndPurchasesDto toDtoWithMembersAndPurchases(BillGroup billGroup) {
-        System.out.println(billGroup.getCurrencyCode());
         return BillGroupWithMembersAndPurchasesDto
                 .builder()
                 .id(billGroup.getId())

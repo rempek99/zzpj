@@ -18,8 +18,8 @@ public abstract class UniqueConstaintException extends Exception{
         return new EmailTakenException(String.format(EMAIL_TAKEN,email));
     }
 
-    public static UserAlreadyInGroupExcepiton createUserAlreadyInGroupException() {
-        return new UserAlreadyInGroupExcepiton(USER_IN_GROUP);
+    public static UserAlreadyInGroupException createUserAlreadyInGroupException() {
+        return new UserAlreadyInGroupException(USER_IN_GROUP);
     }
 
     private static class LoginTakenException extends UniqueConstaintException {
@@ -34,8 +34,8 @@ public abstract class UniqueConstaintException extends Exception{
         }
     }
 
-    private static class UserAlreadyInGroupExcepiton extends UniqueConstaintException{
-        public UserAlreadyInGroupExcepiton(String message) {
+    public static class UserAlreadyInGroupException extends UniqueConstaintException{
+        public UserAlreadyInGroupException(String message) {
             super(message);
         }
     }
